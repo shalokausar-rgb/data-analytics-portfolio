@@ -362,7 +362,46 @@ function initPortfolio() {
     initMobileMenu();
     initContactForm();
     initSmoothScroll();
-    initCounterAnimation();
+    function initCounterAnimation(){
+        // Animated Statistics Counter (CORRECTED)
+function initCounterAnimation() {
+    if (!statNumbers.length) return;
+
+    const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+
+            const el = entry.target;
+            const target = Number(el.dataset.count);
+
+            if (el.classList.contains('counted')) return;
+            el.classList.add('counted');
+
+            let current = 0;
+            const duration = 2000;
+            const step = 16;
+            const increment = Math.max(1, Math.floor(target / (duration / step)));
+
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    el.textContent = target + "+";
+                    clearInterval(timer);
+                } else {
+                    el.textContent = current;
+                }
+            }, step);
+
+            obs.unobserve(el);
+        });
+    }, { threshold: 0.6 });
+
+    statNumbers.forEach(stat => {
+        stat.textContent = "0";
+        observer.observe(stat);
+    });
+}
+    }
     initSkillBarsAnimation();
     initHeaderScroll();
     initProjectCards();
