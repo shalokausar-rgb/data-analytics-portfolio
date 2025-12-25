@@ -205,7 +205,7 @@ function showNotification(message, type = 'success') {
 }
 
 // Animated Statistics Counter
-function initCounterAnimation() {
+function initCounterAnimation(); {
     if (statNumbers.length === 0) return;
     
     const animateCounter = (element) => {
