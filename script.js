@@ -1,99 +1,51 @@
-// ===============================
-// Shehla Kausar Portfolio - script.js
-// ===============================
+// MINIMAL VERSION - Just copy and paste
 
-// ---------- DOM ELEMENTS ----------
-const menuToggle = document.getElementById("menuToggle");
-const navLinks = document.getElementById("navLinks");
-const contactForm = document.getElementById("contactForm");
-
-// ---------- MOBILE MENU ----------
-function initMobileMenu() {
-    if (!menuToggle || !navLinks) return;
-
-    menuToggle.addEventListener("click", () => {
-        navLinks.classList.toggle("active");
-        menuToggle.innerHTML = navLinks.classList.contains("active")
-            ? '<i class="fas fa-times"></i>'
-            : '<i class="fas fa-bars"></i>';
-    });
-
-    document.querySelectorAll(".nav-links a").forEach(link => {
-        link.addEventListener("click", () => {
-            navLinks.classList.remove("active");
-            menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-        });
-    });
-}
-
-// ---------- CONTACT FORM ----------
-function initContactForm() {
-    if (!contactForm) return;
-
-    contactForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-        alert("Message sent successfully!");
-        contactForm.reset();
+function startCountingAnimation() {
+    const counters = [
+        { id: 'projectsCounter', target: 127 },
+        { id: 'clientsCounter', target: 89 },
+        { id: 'experienceCounter', target: 12 },
+        { id: 'analysisCounter', target: 99 }
+    ];
+    
+    const duration = 2000;
+    const delay = 300;
+    
+    counters.forEach((counter, index) => {
+        const element = document.getElementById(counter.id);
+        if (!element) return;
+        
+        setTimeout(() => {
+            let start = 0;
+            const increment = counter.target / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= counter.target) {
+                    current = counter.target;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current);
+            }, 16);
+        }, index * delay);
     });
 }
 
-// ---------- ✅ FIXED COUNTER (IMPORTANT) ----------
-function initCounterAnimation() {
-    const counters = document.querySelectorAll(".stat-number");
+// Start on page load
+window.addEventListener('load', startCountingAnimation);
 
-    counters.forEach(counter => {
-        const target = Number(counter.getAttribute("data-count"));
-        let current = 0;
-
-        const interval = setInterval(() => {
-            current++;
-            counter.textContent = current;
-
-            if (current >= target) {
-                counter.textContent = target + "+";
-                clearInterval(interval);
-            }
-        }, 30); // speed
+// Or start when scrolled into view
+function startOnScroll() {
+    const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+            startCountingAnimation();
+            observer.unobserve(entries[0].target);
+        }
     });
+    
+    const statsSection = document.querySelector('.stats-container');
+    if (statsSection) observer.observe(statsSection);
 }
 
-// ---------- SMOOTH SCROLL ----------
-function initSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener("click", function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute("href"));
-            if (target) {
-                window.scrollTo({
-                    top: target.offsetTop - 80,
-                    behavior: "smooth"
-                });
-            }
-        });
-    });
-}
-
-// ---------- HEADER SHADOW ----------
-function initHeaderScroll() {
-    const header = document.querySelector("header");
-    if (!header) return;
-
-    window.addEventListener("scroll", () => {
-        header.style.boxShadow =
-            window.scrollY > 50
-                ? "0 8px 20px rgba(106,13,173,0.2)"
-                : "none";
-    });
-}
-
-// ---------- INIT EVERYTHING ----------
-function initPortfolio() {
-    initMobileMenu();
-    initContactForm();
-    initSmoothScroll();
-    initHeaderScroll();
-    initCounterAnimation(); // 🔥 COUNTER RUNS HERE
-}
-
-// ---------- DOM READY ----------
-document.addEventListener("DOMContentLoaded", initPortfolio)
+document.addEventListener('DOMContentLoaded', startOnScroll);
